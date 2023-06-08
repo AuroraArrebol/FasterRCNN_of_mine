@@ -14,7 +14,7 @@ import os
 class VOC2012DataSet(Dataset):
     def __init__(self,voc_root,transforms=None, txt_name: str = "train.txt"):
         self.root=os.path.join(voc_root,"VOCdevkit","VOC2012")
-        self.img_root=os.path.join(self.root,"JEPGImages")
+        self.img_root=os.path.join(self.root,"JPEGImages")
         self.annotations_root=os.path.join(self.root,"Annotations")
         txt_path=os.path.join(self.root,"ImageSets","Main",txt_name)
         # if train_set:
@@ -57,7 +57,7 @@ class VOC2012DataSet(Dataset):
             xmax = float(obj["bndbox"]["xmax"])
             ymin = float(obj["bndbox"]["ymin"])
             ymax = float(obj["bndbox"]["ymax"])
-            boxes.append([xmin,xmax,ymin,ymax])
+            boxes.append([xmin,ymin,xmax,ymax])
             labels.append(self.class_dict[obj["name"]])
             iscrowd.append(int(obj["difficult"]))
 
@@ -113,6 +113,7 @@ class VOC2012DataSet(Dataset):
         data_width = int(data["size"]["width"])
         return data_height, data_width
 
+
 import transforms
 from draw_box_utils import draw_objs
 from PIL import Image
@@ -139,8 +140,9 @@ data_transform = {
 }
 
 # load train data set
-train_data_set = VOC2012DataSet(os.getcwd(), transforms =data_transform["train"], txt_name = "train.txt")
+train_data_set = VOC2012DataSet(voc_root = os.getcwd(),transforms =data_transform["train"], txt_name = "train.txt")
 print(len(train_data_set))
+print(train_data_set[0])
 for index in random.sample(range(0, len(train_data_set)), k=5):
     img, target = train_data_set[index]
     img = ts.ToPILImage()(img)
